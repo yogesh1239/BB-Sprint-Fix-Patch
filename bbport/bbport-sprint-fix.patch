@@ -1,0 +1,47 @@
+From 70dffbdba0182390fa98b6530f0ece7d2c69a38e Mon Sep 17 00:00:00 2001
+From: yogesh1239 <77014257+yogesh1239@users.noreply.github.com>
+Date: Fri, 2 Oct 2026 17:37:49 +0530
+Subject: [PATCH] Patches: fix sprint dropping to half speed at high frame
+ rates
+
+The wall detector in the movement update (0x1914500) treats the character
+as blocked when the distance moved in one frame * 30.0 is below 1.0. That
+threshold was written for 30 FPS: above ~147 FPS the sprint ramp falls
+under it, the slowdown scale decays x0.8 to 0.5 and locks sprint at half
+speed. Divide by the frame dt ([rbp-0x74]) instead, so the test is
+"speed below 1 unit/s" at every frame rate (the original 30 FPS rule).
+
+Added to "Uncap FPS++" and "90 FPS++". Tested live: sprint 6.7-6.95 u/s
+at 60/120/200/240 FPS targets (was ~3.2 at 200/240); run speed unchanged.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vb32d7skPfMztipqAdXvPt
+---
+ patches/Bloodborne.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/patches/Bloodborne.xml b/patches/Bloodborne.xml
+index 6b425ea..b14b6fc 100644
+--- a/patches/Bloodborne.xml
++++ b/patches/Bloodborne.xml
+@@ -1011,6 +1011,8 @@
+             <Line Type="bytes" Address="0x04d27284" Value="8988083D"/>
+             <Line Type="bytes" Address="0x04d2728c" Value="0AD7233D"/>
+             <Line Type="bytes" Address="0x04D25E94" Value="8988083D"/>
++            <!-- Sprint fix: the wall detector tests speed (distance / dt) instead of distance * 30 per frame; sprint no longer halves above ~147 FPS. -->
++            <Line Type="bytes" Address="0x01914c24" Value="c5fa5e458c0f1f00"/>
+         </PatchList>
+     </Metadata>
+     <Metadata Title="Bloodborne" Name="Uncap FPS++" Note="Not really recommended as a lot of the timestep fixes would vary with fluctuating frame cap. Remember to increase vblank frequency." Author="Lance McDonald (manfightdragon), Kyo" PatchVer="1.0" AppVer="01.09" AppElf="eboot.bin" isEnabled="true">
+@@ -1186,6 +1188,8 @@
+             <Line Type="bytes32" Address="0x04D0b5b4" Value="0x3F798497"/>
+             <Line Type="bytes32" Address="0x04D0b5b8" Value="0x3F798497"/>
+             <Line Type="bytes32" Address="0x04D0b5bc" Value="0x3F798497"/>
++            <!-- Sprint fix: the wall detector tests speed (distance / dt) instead of distance * 30 per frame; sprint no longer halves above ~147 FPS. -->
++            <Line Type="bytes" Address="0x01914c24" Value="c5fa5e458c0f1f00"/>
+         </PatchList>
+     </Metadata>
+     <Metadata Title="Bloodborne" Name="Restore Debug Menu (READ NOTES)" Author="Whitehawkx, auser1337" Note="This patch requires debug font files, which is available from nexusmods. It will crash without them. Access the menu by pressing left side of touchpad. " PatchVer="1.0" AppVer="01.09" AppElf="eboot.bin" isEnabled="false">
+-- 
+2.55.0
+
