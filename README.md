@@ -17,19 +17,35 @@ This patch fixes the cause in the game code. It is not a workaround.
 
 | File | For |
 |---|---|
-| [`patches/Bloodborne_Sprint_Fix.xml`](patches/Bloodborne_Sprint_Fix.xml) | Emulators and loaders that use the GoldHEN / shadPS4 XML patch format |
+| [`patches/Bloodborne_Sprint_Fix.xml`](patches/Bloodborne_Sprint_Fix.xml) | **Sprint Fix (High FPS)**: the fix alone, one line. Turn it on together with Uncap FPS++ or 90 FPS++. |
+| [`patches/Bloodborne_Uncap_FPS_Sprint_Fix.xml`](patches/Bloodborne_Uncap_FPS_Sprint_Fix.xml) | **Uncap FPS++ (Sprint Fix)**: the full community Uncap FPS++ patch with the fix already added. One switch instead of two. |
 | [`bbport/bbport-sprint-fix.patch`](bbport/bbport-sprint-fix.patch) | The [bbport](https://github.com/deadinside28/bloodborne_pc) native Linux port (a `git` patch) |
+
+Both XML files use the GoldHEN / shadPS4 patch format.
+
+**Which one?**
+
+- Want one switch? Use **Uncap FPS++ (Sprint Fix)**, and turn the normal **Uncap FPS++ off**.
+  Do not use both: they write the same addresses.
+- Use 90 FPS++, or want to keep your own Uncap FPS++ version? Use **Sprint Fix (High FPS)**
+  next to it.
+
+The combined file is a copy of Uncap FPS++ (by Lance McDonald and Kyo) as it was in the
+bbport patch file, plus one line at the end. If they update Uncap FPS++ later, this copy does
+not change; the one-line patch keeps working with the new version.
 
 ## Install
 
 ### shadPS4 (or any tool that reads GoldHEN/shadPS4 XML patches)
 
 1. Open your Bloodborne patch file in the emulator's patches folder.
-2. Copy the `<Metadata Name="Sprint Fix (High FPS)" ...> ... </Metadata>` block from
-   `patches/Bloodborne_Sprint_Fix.xml` into it, next to the other `<Metadata>` blocks.
-3. Enable **Sprint Fix (High FPS)** together with **Uncap FPS++** (or **90 FPS++**).
+2. Copy the `<Metadata ...> ... </Metadata>` block from the XML file you chose into it, next
+   to the other `<Metadata>` blocks.
+3. Enable it:
+   - **Sprint Fix (High FPS)**: together with **Uncap FPS++** (or **90 FPS++**).
+   - **Uncap FPS++ (Sprint Fix)**: alone, with the normal **Uncap FPS++** turned off.
 
-Or load `Bloodborne_Sprint_Fix.xml` as its own patch file if your tool supports more than one.
+Or load the XML file as its own patch file if your tool supports more than one.
 
 ### bbport
 
@@ -174,8 +190,16 @@ bug, which confirmed that the cause is in the original game logic.
 
 ## Credits
 
-- Lance McDonald (manfightdragon) and Kyo for the 60 FPS and unlocked frame-rate patches.
-- The bbport authors for the native port this was found and tested on.
+- **Made by Claude Opus** (Anthropic's AI model, in Claude Code), directed and play-tested by
+  yogesh1239. Claude found the cause, wrote the patch and ran the measurements. Claude Opus
+  planned and reviewed the work; Claude Sonnet helper agents did part of the code tracing.
+- **[bbport](https://github.com/deadinside28/bloodborne_pc)**, the native Linux port, made this
+  possible. Its scripted controller input let Claude control the character directly: sprint,
+  run and stop on exact timings, many times in a row, so every frame rate got the same test.
+  The port also runs the game as a normal Linux program, so the game's memory could be read
+  and watched live while it ran. The fix was found and tested on it.
+- Lance McDonald (manfightdragon) and Kyo for the 60 FPS and unlocked frame-rate patches
+  (Uncap FPS++ is their work).
 
 ## License
 
